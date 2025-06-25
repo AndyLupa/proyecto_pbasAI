@@ -7,7 +7,7 @@ const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
 
-async function makeRequest() {
+async function makeRequest1() {
     try {
         const response = await openai.chat.completions.create({
         model: "gpt-4o-mini",
@@ -27,7 +27,7 @@ async function makeRequest() {
     }
 }
 
-makeRequest();
+makeRequest1();
 
 
 /*
