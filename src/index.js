@@ -1,6 +1,7 @@
 
 require('dotenv').config();
 const OpenAI = require('openai');
+const path = require('path');
 
 
 const openai = new OpenAI({
