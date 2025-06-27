@@ -2,6 +2,62 @@
 require('dotenv').config();
 const OpenAI = require('openai');
 const path = require('path');
+const connection = require('./db.js'); 
+
+const openai = new OpenAI({
+  apiKey: process.env.OPENAI_API_KEY,
+});
+
+// Esta función retorna una promesa con los datos
+const obtenerDatos = () => {
+  return new Promise((resolve, reject) => {
+    const sql = `
+              SELECT DOC.casa, DOC.nombre, DOC.ano, DOC.genero, DOC.golfativo, 
+              DOC.top, DOC.middle, DOC.BASE, DOC.url, DOC.DESCRIP
+              FROM web.fragancias_doc DOC
+              WHERE DELETED = 0 
+              AND DOC.nombre = "Bouquet #23927"
+    `;
+
+    connection.query(sql, (error, resultados) => {
+      if (error) {
+        console.error('Error al ejecutar la consulta:', error);
+        return reject(error);
+      }
+
+      resolve(JSON.stringify(resultados[0], null, 2));
+      console.table(resultados[0]);
+    });
+  });
+};
+
+async function makeRequest1() {
+  try {
+    const datos = await obtenerDatos();
+
+    const response = await openai.chat.completions.create({
+      model: "gpt-4o-mini",
+      messages: [
+        {
+          role: 'user',
+          content: `Eres un perfumista experto. Arma una pirámide olfativa nueva, 
+          dame un texto mejor enunciado y con orientación al cliente, sin mensionar fragantica con estos datos: ${datos}`
+        }
+      ],
+    });
+
+    console.log('Respuesta:', response.choices[0].message.content);
+  } catch (error) {
+    console.error('Error al llamar a la API:', error.message);
+  }
+}
+
+makeRequest1();
+
+
+/*require('dotenv').config();
+const OpenAI = require('openai');
+const path = require('path');
 const connection = require('db.js');
 
 
@@ -52,7 +108,7 @@ async function makeRequest1() {
 }
 
 makeRequest1();
-
+*/
 
 /*
 
